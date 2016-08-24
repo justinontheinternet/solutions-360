@@ -17,18 +17,19 @@ function encodeBranchPercent(branch) {
 }
 
 function cbFunction(ele, ind, yearlyRevenues) {
-  console.log("element:", ele);
+  var element = [ ele ]; // grab only the current element to bind as data
+  
   var svg = d3.select('#' + ele.branch_name.replace(" ", "-")) // remove space and add dash to match id from div
     .append('svg')
     .attr('width', svgWidth)
     .attr('height', svgHeight);
 
   svg.selectAll('rect')
-    .data(yearlyRevenues)
+    .data(element)
     .enter()
     .append('rect')
     .attr('x', function(d, i) {
-      return i * (svgWidth / yearlyRevenues.length); // width of svg divided by how many elements in the array multiplied by index of element
+      return i * (svgWidth / (Object.keys(d).length - 2)); // width of svg divided by how many elements in the array multiplied by index of element
     })
     .attr('y', function(d, i) {
       return svgHeight - d.yearly_forecast / 100000; // because svg y-axis begins from top, we must offset each bar towards the bottom
@@ -39,17 +40,17 @@ function cbFunction(ele, ind, yearlyRevenues) {
     })
     .attr('fill', 'red');
 
-  svg.selectAll('text')
-    .data(yearlyRevenues)
-    .enter()
-    .append('text')
-    .text(function(d, i) {
-      return d.branch_name;
-    })
-    .attr('x', function(d, i) {
-      return i * (svgWidth / yearlyRevenues.length);
-    })
-    .attr('y', svgHeight);
+  // svg.selectAll('text')
+  //   .data(yearlyRevenues)
+  //   .enter()
+  //   .append('text')
+  //   .text(function(d, i) {
+  //     return d.branch_name;
+  //   })
+  //   .attr('x', function(d, i) {
+  //     return i * (svgWidth / (Object.keys(d).length - 2));
+  //   })
+  //   .attr('y', svgHeight);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

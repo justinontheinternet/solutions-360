@@ -62,8 +62,8 @@
       </script>
       
       <h5><?php echo $branch_row[$branch]; ?></h5>
-      <hr />
     </div>
+    <hr />
     <?php
       }
     ?>
