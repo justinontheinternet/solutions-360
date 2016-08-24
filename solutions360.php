@@ -50,7 +50,8 @@
     }
   ?>
 
-  <ul>
+  <!-- Place holder for <rect /> tags to be added via D3 -->
+  <svg class="svg-1">
     <?php
       while ($branch_row = mysqli_fetch_assoc($yearly_revenues)) {
     ?>
@@ -58,7 +59,7 @@
       // Make data available to javascript by encoding it to json
       encodeYearlyRevenues(<?php echo json_encode($branch_row) ?>)
     </script>
-
+    
     <li><?php echo $branch_row[$branch]; ?></li>
     <li>2015: $<?php echo $branch_row[$last_fiscal]; ?></li>
     <li>2016: $<?php echo $branch_row[$current_fiscal]; ?></li>
@@ -69,7 +70,7 @@
     <?php
       }
     ?>
-  </ul>
+  </svg>
 
   <?php
     // unset data to free up server memory
