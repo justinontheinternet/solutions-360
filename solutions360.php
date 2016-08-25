@@ -18,7 +18,8 @@
 
   // connect to 'solutions_360' database
   $db = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
-  // ensuring connection was successful
+  // ensuring connection was successful by checking for an error number
+  // check for number instead of error, because no error will still return an empty string
   if (mysqli_connect_errno()) {
     die("Database connection failed. Error #{mysqli_connect_errno()}: {mysqli_connect_error()}");
   }
@@ -33,19 +34,20 @@
   <script src="index.js" type="text/javascript"></script>
 </head>
 <body>
+  <!-- create container to keep contents from edges of page -->
   <div class="container">
     <header>
       <h1>Branch Data</h1>
     </header>
 
     <?php
-      // Query comparing yearly revenues, and calculating progress to forecast as a percentage
+      // Assemble query comparing yearly revenues, and calculating progress to forecast as a percentage
       $query = "SELECT {$branch}, {$last_fiscal}, {$current_fiscal}, {$yearly_forecast}, ";
       $query .= "ROUND ( ({$current_fiscal} / {$yearly_forecast}) * 100.00, 2) AS yearly_percent ";
       $query.= "FROM {$branches}";
-
+      // send the query and store the result set in $yearly_revenues
       $yearly_revenues = mysqli_query($db, $query);
-
+      // if there is no result set (not the same as empty result), then we know the query failed
       if (!$yearly_revenues) {
         die("Database query failed.");
       }
@@ -59,7 +61,9 @@
     </div>
 
     <div class="svg-1">
+
       <?php
+        // creating an associative array from each row in the result set
         while ($branch_row = mysqli_fetch_assoc($yearly_revenues)) {
       ?>
       <!-- Placeholder <div> for <rect /> tags to be added via D3 -->
@@ -111,7 +115,8 @@
     ?>
 
     <div class="svg-2">
-      <div class="buffer">
+      <!-- create a div around the <svg> to center it -->
+      <div class="buffer"> 
         <svg class="pie">
         </svg>
       </div>
