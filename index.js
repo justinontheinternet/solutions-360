@@ -58,29 +58,33 @@ function appendForecast(ele, ind, yearlyRevenues) {
 }
 
 function appendPieChart() {
+  // create a new pie generator and make sure it references the correct data 
   var pie = d3.pie()
     .value(function(d) {
       return d.current_fiscal_year;
     });
+  // the pie generator takes the dataset, and returns the corresponding angles for each 'slice'
   var slices = pie(branchPercents);
 
-  var arc = d3.arc().innerRadius(0).outerRadius(170);
-  var colour = d3.schemeCategory10;
+  var arc = d3.arc().innerRadius(0).outerRadius(170); // determining inner and outer circle sizes
+  var colour = d3.schemeCategory10; // returns an array of 10 distinct colours to use for pie slices
 
   var svg = d3.select('svg.pie');
   var g = svg.append('g')
     .attr('transform', 'translate(400, 200)');
 
+  // bind the 'slices' data set to, and create new <path>s, and they use the angles data to form slices of the pie chart
   g.selectAll('path.slice')
     .data(slices)
-    .enter()
+    .enter() // this will append a path for each entry in the slices array
     .append('path')
     .attr('class', 'slice')
     .attr('d', arc)
     .attr('fill', function(d, i) {
-      return colour[i];
+      return colour[i]; // use the 10-colour array retrieved before to assign a colour to each slice ()
     });
 
+  // append <text> elements to the <svg> to create a legend
   svg.append('g')
     .attr('class', 'pie-legend')
     .selectAll('text')
