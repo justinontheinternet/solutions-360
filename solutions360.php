@@ -58,7 +58,7 @@
     <div id="<?php echo str_replace(" ", "-", $branch_row[$branch]) ?>">
       <script type="text/javascript">
         // Make data available to javascript by encoding it to json
-        encodeYearlyRevenues(<?php echo json_encode($branch_row) ?>)
+        encodeYearlyRevenues( <?php echo json_encode($branch_row) ?> );
       </script>
       
       <h5><?php echo $branch_row[$branch]; ?></h5>
@@ -91,26 +91,24 @@
     }
   ?>
 
-  <ul>
     <?php
       while ($branch_row = mysqli_fetch_assoc($branch_percent)) {
     ?>
     <script type="text/javascript">
-      encodeBranchPercent(<?php echo json_encode($branch_row) ?>)
+      encodeBranchPercent( <?php echo json_encode($branch_row) ?> );
     </script>
-
-    <li><?php echo $branch_row[$branch]; ?></li>
-    <li><?php echo $branch_row['pct_of_total']; ?>%</li>
-    <hr />
-
     <?php
       }
     ?>
-  </ul>
 
   <?php
     mysqli_free_result($branch_percent);
   ?>
+
+  <div id="svg-2">
+    <svg class="pie">
+    </svg>
+  </div>
 </body>
 </html>
 
