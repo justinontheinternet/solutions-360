@@ -36,7 +36,7 @@ function appendBar(svg, ele, stat, colour, xPos) {
 }
 
 
-function appendForecast(ele, ind, yearlyRevenues) {
+function appendBarChart(ele, ind, yearlyRevenues) {
   // creating a <div> and an <h5> to be appended after <svg> charts
   var div = document.getElementById(ele.branch_name.replace(" ", "-"));
   var h5 = document.createElement('h5');
@@ -105,7 +105,7 @@ function appendPieChart() {
 // after the DOM has loaded, initiate functions to place content
 document.addEventListener('DOMContentLoaded', function() {
 
-  yearlyRevenues.forEach(appendForecast);
+  yearlyRevenues.forEach(appendBarChart);
   appendPieChart()
 
 
