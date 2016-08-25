@@ -33,81 +33,90 @@
   <script src="index.js" type="text/javascript"></script>
 </head>
 <body>
-  <h1>Branch Data</h1>
+  <div class="container">
+    <header>
+      <h1>Branch Data</h1>
+    </header>
 
-  <h2>Yearly Revenue Totals</h2>
-
-  <?php
-    // Query comparing yearly revenues, and calculating progress to forecast as a percentage
-    $query = "SELECT {$branch}, {$last_fiscal}, {$current_fiscal}, {$yearly_forecast}, ";
-    $query .= "ROUND ( ({$current_fiscal} / {$yearly_forecast}) * 100.00, 2) AS yearly_percent ";
-    $query.= "FROM {$branches}";
-
-    $yearly_revenues = mysqli_query($db, $query);
-
-    if (!$yearly_revenues) {
-      die("Database query failed.");
-    }
-  ?>
-
-  <!-- Place holder for <rect /> tags to be added via D3 -->
-  <div class="svg-1">
     <?php
-      while ($branch_row = mysqli_fetch_assoc($yearly_revenues)) {
+      // Query comparing yearly revenues, and calculating progress to forecast as a percentage
+      $query = "SELECT {$branch}, {$last_fiscal}, {$current_fiscal}, {$yearly_forecast}, ";
+      $query .= "ROUND ( ({$current_fiscal} / {$yearly_forecast}) * 100.00, 2) AS yearly_percent ";
+      $query.= "FROM {$branches}";
+
+      $yearly_revenues = mysqli_query($db, $query);
+
+      if (!$yearly_revenues) {
+        die("Database query failed.");
+      }
     ?>
-    <div id="<?php echo str_replace(" ", "-", $branch_row[$branch]) ?>">
-      <script type="text/javascript">
-        // Make data available to javascript by encoding it to json
-        encodeYearlyRevenues( <?php echo json_encode($branch_row) ?> );
-      </script>
-      
-      <h5><?php echo $branch_row[$branch]; ?></h5>
+
+    <h2>Yearly Revenue Totals by Branch</h2>
+    <div class="bar-legend">
+      <div><div class="bar-key" id="yearly-forecast"></div><p>2016 Forecast</p></div>
+      <div><div class="bar-key" id="current-fiscal"></div><p>2016 Revenue To-Date</p></div>
+      <div><div class="bar-key" id="last-fiscal"></div><p>2015 Revenue</p></div>
     </div>
-    <hr />
+
+    <div class="svg-1">
+      <?php
+        while ($branch_row = mysqli_fetch_assoc($yearly_revenues)) {
+      ?>
+      <!-- Placeholder <div> for <rect /> tags to be added via D3 -->
+      <div class="bar-chart" id="<?php echo str_replace(" ", "-", $branch_row[$branch]) ?>">
+        <script type="text/javascript">
+          // Make data available to javascript by encoding it to json
+          encodeYearlyRevenues( <?php echo json_encode($branch_row) ?> );
+        </script>
+      </div>
+      <?php
+        }
+      ?>
+    </div>
+
     <?php
+      // unset data to free up server memory
+      mysqli_free_result($yearly_revenues);
+    ?>
+
+    <h2>2016 Revenue Ratio</h2>
+    <?php
+      // Assemble query calculating percent of total year-to-date revenue per branch
+      $query_2 = "SELECT {$branch}, {$current_fiscal}, ";
+      $query_2 .= "ROUND( {$current_fiscal} / ";
+      $query_2 .= "(SELECT SUM( {$current_fiscal} ) FROM {$branches} ";
+      $query_2 .= ") * 100.00, 2) AS pct_of_total ";
+      $query_2 .= "FROM {$branches} ";
+      $query_2 .= "GROUP BY {$branch}";
+
+      $branch_percent = mysqli_query($db, $query_2);
+
+      if (!$branch_percent) {
+        die("Database query failed");
       }
     ?>
-  </div>
 
-  <?php
-    // unset data to free up server memory
-    mysqli_free_result($yearly_revenues);
-  ?>
-
-  <h2>Percent of revenue to-date</h2>
-  <?php
-    // Assemble query calculating percent of total year-to-date revenue per branch
-    $query_2 = "SELECT {$branch}, {$current_fiscal}, ";
-    $query_2 .= "ROUND( {$current_fiscal} / ";
-    $query_2 .= "(SELECT SUM( {$current_fiscal} ) FROM {$branches} ";
-    $query_2 .= ") * 100.00, 2) AS pct_of_total ";
-    $query_2 .= "FROM {$branches} ";
-    $query_2 .= "GROUP BY {$branch}";
-
-    $branch_percent = mysqli_query($db, $query_2);
-
-    if (!$branch_percent) {
-      die("Database query failed");
-    }
-  ?>
+      <?php
+        while ($branch_row = mysqli_fetch_assoc($branch_percent)) {
+      ?>
+      <script type="text/javascript">
+        encodeBranchPercent( <?php echo json_encode($branch_row) ?> );
+      </script>
+      <?php
+        }
+      ?>
 
     <?php
-      while ($branch_row = mysqli_fetch_assoc($branch_percent)) {
-    ?>
-    <script type="text/javascript">
-      encodeBranchPercent( <?php echo json_encode($branch_row) ?> );
-    </script>
-    <?php
-      }
+      mysqli_free_result($branch_percent);
     ?>
 
-  <?php
-    mysqli_free_result($branch_percent);
-  ?>
+    <div class="svg-2">
+      <div class="buffer">
+        <svg class="pie">
+        </svg>
+      </div>
+    </div>
 
-  <div id="svg-2">
-    <svg class="pie">
-    </svg>
   </div>
 </body>
 </html>

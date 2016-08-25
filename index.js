@@ -12,10 +12,25 @@ function encodeYearlyRevenues(branch) {
 
 function encodeBranchPercent(branch) {
   branchPercents.push(branch);
-  // console.log(branchPercents);
 }
 
+function appendBar(svg, element, revenue, colour) {
+  svg.append('rect')
+  .attr('x', 0)
+  .attr('y', function(d, i) {
+    return barSvgHeight - d[revenue] / 100000; // because svg y-axis begins from top, we must offset each bar towards the bottom
+  })
+  .attr('width', barSvgWidth / (Object.keys(ele).length - 2) - barPadding)
+  .attr('height', function(d, i) {
+    return d[revenue] / 100000; // height of bar is determined by data, scaled down to fit bars in <svg>
+  })
+  .attr('fill', colour);
+}
+
+
 function appendForecast(ele, ind, yearlyRevenues) {
+  var div = document.getElementById(ele.branch_name.replace(" ", "-"));
+  var h5 = document.createElement('h5');
   var element = [ ele ]; // grab only the current element to bind as data
   var index = ind;
   
@@ -42,7 +57,7 @@ function appendForecast(ele, ind, yearlyRevenues) {
     .call(function(svg) {
       svg.append('rect')
       .attr('x', function(d, i) {
-        return barSvgWidth / (Object.keys(d).length - 2); // width of svg divided by how many elements in the array multiplied by index of element
+        return barSvgWidth / (Object.keys(d).length - 2); // width of svg divided by how many elements in the array
       })
       .attr('y', function(d, i) {
         return barSvgHeight - d.current_fiscal_year / 100000;
@@ -56,7 +71,7 @@ function appendForecast(ele, ind, yearlyRevenues) {
     .call(function(svg) {
       svg.append('rect')
       .attr('x', function(d, i) {
-        return 2 * (barSvgWidth / (Object.keys(d).length - 2)); // width of svg divided by how many elements in the array multiplied by index of element
+        return 2 * (barSvgWidth / (Object.keys(d).length - 2)); // multiplied by 2 to place 3rd bar
       })
       .attr('y', function(d, i) {
         return barSvgHeight - d.last_fiscal_year / 100000;
@@ -67,6 +82,9 @@ function appendForecast(ele, ind, yearlyRevenues) {
       })
       .attr('fill', 'yellow');
     })
+  // Append the <h5> last to place it under each chart
+  h5.innerHTML = ele.branch_name;
+  div.appendChild(h5);
 }
 
 function appendPieChart() {
@@ -76,12 +94,12 @@ function appendPieChart() {
     });
   var slices = pie(branchPercents);
 
-  var arc = d3.arc().innerRadius(0).outerRadius(100);
+  var arc = d3.arc().innerRadius(0).outerRadius(170);
   var colour = d3.schemeCategory10;
 
   var svg = d3.select('svg.pie');
   var g = svg.append('g')
-    .attr('transform', 'translate(200, 200)');
+    .attr('transform', 'translate(400, 200)');
 
   g.selectAll('path.slice')
     .data(slices)
@@ -93,23 +111,24 @@ function appendPieChart() {
       return colour[i];
     });
 
-  // svg.append('g')
-  //   .attr('class', 'legend')
-  //   .selectAll('text')
-  //   .data(slices)
-  //   .enter()
-  //   .append('text')
-  //   .text(function(d) {
-  //     return d.data.branch_name + " " + d.data.total_pct;
-  //   })
-  //   .attr('fill', function(d, i) {
-  //     return colour[i];
-  //   })
-  //   .atty('y', function(d, i) {
-  //     return 20 * (i + 1);
-  //   });
+  svg.append('g')
+    .attr('class', 'pie-legend')
+    .selectAll('text')
+    .data(slices)
+    .enter()
+    .append('text')
+    .text(function(d) {
+      return d.data.branch_name + " - " + d.data.pct_of_total + "%";
+    })
+    .attr('fill', function(d, i) {
+      return colour[i];
+    })
+    .attr('y', function(d, i) {
+      return 20 * (i + 1);
+    });
 }
 
+// after the DOM has loaded, initiate functions to place content
 document.addEventListener('DOMContentLoaded', function() {
 
   yearlyRevenues.forEach(appendForecast);
