@@ -1,9 +1,9 @@
 <?php
   // DATABASE INFO
-  $db_host = "localhost";
-  $db_name = "solutions_360";
-  $db_user = "solutions360";
-  $db_pass = "solutionspassword";
+  $db_host = "us-cdbr-iron-east-04.cleardb.net";
+  $db_name = "heroku_640a5cfadf61df1";
+  $db_user = "b30044e1062018";
+  $db_pass = "0eb50919";
 
   // BRANCHES TABLE INFO
   $branches = "branches";
