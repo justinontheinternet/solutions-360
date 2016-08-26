@@ -53,7 +53,7 @@
       }
     ?>
 
-    <h2>Yearly Revenue Totals by Branch</h2>
+    <h2>Branch Performance Comparison</h2>
     <div class="bar-legend">
       <div><div class="bar-key" id="yearly-forecast"></div><p>2016 Forecast</p></div>
       <div><div class="bar-key" id="current-fiscal"></div><p>2016 Revenue To-Date</p></div>
