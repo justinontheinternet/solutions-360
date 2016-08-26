@@ -43,6 +43,7 @@
     <?php
       // Assemble query comparing yearly revenues, and calculating progress to forecast as a percentage
       $query = "SELECT {$branch}, {$last_fiscal}, {$current_fiscal}, {$yearly_forecast}, ";
+      // Did not end up using 'yearly_percent' in final product due to not having a nice way to display it,  but kept it in to illustrate my intention
       $query .= "ROUND ( ({$current_fiscal} / {$yearly_forecast}) * 100.00, 2) AS yearly_percent ";
       $query.= "FROM {$branches}";
       // send the query and store the result set in $yearly_revenues
