@@ -1,1 +1,5 @@
-{}
+{
+    "require": {
+        "herrera-io/silex-pdo": "^1.2"
+    }
+}
